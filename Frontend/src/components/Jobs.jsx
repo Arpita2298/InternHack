@@ -9,6 +9,7 @@ import Navbar from "./shared/Navbar"; // ✅ Navbar component
 import FilterCard from "./FilterCard"; // ✅ Filter sidebar
 import Job from "./Job"; // ✅ Single job card
 import Jobnotfound from "./Jobnotfound";
+
 const Jobs = () => {
   const { authUser } = useSelector((store) => store.auth);
   const {
@@ -25,21 +26,26 @@ const Jobs = () => {
     dispatch(fetchJobs());
   }, [dispatch]);
 
-  // ✅ filter jobs
+  // ✅ filter jobs with multiple keywords
   useEffect(() => {
     if (Array.isArray(allJobs)) {
-      if (searchText) {
-        const filteredJobs = allJobs.filter((job) => {
-          return (
-            job?.title?.toLowerCase().includes(searchText.toLowerCase()) ||
-            job?.description
-              ?.toLowerCase()
-              .includes(searchText.toLowerCase()) ||
-            job?.location?.toLowerCase().includes(searchText.toLowerCase())
-          );
-        });
+      console.log("All jobs:", allJobs);
+
+      if (!searchText && searchText.trim() !== "") {
+        const keywords = searchText.toLowerCase().split(" ");
+        const filteredJobs = allJobs.filter((job) =>
+          keywords.some(
+            (kw) =>
+              job.title.toLowerCase().includes(kw) ||
+              job.description.toLowerCase().includes(kw) ||
+              job.location.toLowerCase().includes(kw) ||
+              job.company.toLowerCase().includes(kw)
+          )
+        );
+        console.log("Filtered jobs:", filteredJobs);
         setFilterJobs(filteredJobs);
       } else {
+        // 🔹 show all jobs if no search
         setFilterJobs(allJobs);
       }
     }
@@ -60,6 +66,7 @@ const Jobs = () => {
           <div className="w-[20%]">
             <FilterCard />
           </div>
+
           {status === "loading" ? (
             <p>Loading jobs...</p>
           ) : filterJobs?.length > 0 ? (

@@ -16,7 +16,7 @@ const useGetAllJobs = () => {
       try {
         axios.defaults.withCredentials = true;
         const res = await axios.get(
-          `${API_BASE_URL}/api/v1/job/all?keyword=${encodeURIComponent(
+          `${API_BASE_URL}/api/jobs/all?keyword=${encodeURIComponent(
             searchText || ""
           )}`
         );
