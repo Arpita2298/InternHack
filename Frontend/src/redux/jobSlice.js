@@ -3,8 +3,9 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 // thunk for fetching jobs
 export const fetchJobs = createAsyncThunk("jobs/fetchJobs", async () => {
-  const res = await fetch("http://localhost:5000/api/v1/job/all");
+  const res = await fetch("http://localhost:5000/api/jobs/all");
   const data = await res.json();
+  console.log(data.jobs); // ✅ debug
   return data.jobs;
 });
 

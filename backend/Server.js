@@ -8,6 +8,7 @@ import mongoose from "mongoose";
 import authRoutes from "./routes/auth.js";
 import companyRoutes from "./routes/company.routes.js";
 import jobRoutes from "./routes/job.routes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -23,9 +24,10 @@ app.use(
   })
 );
 
+app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/company", companyRoutes);
-app.use("/api/v1/job", jobRoutes);
+app.use("/api/jobs", jobRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)

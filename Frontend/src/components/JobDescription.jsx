@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,8 +24,11 @@ const JobDescription = () => {
     try {
       axios.defaults.withCredentials = true;
       const res = await axios.get(
-        `${API_BASE_URL}/api/v1/application/apply/${params.id}`
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/application/apply/${
+          params.id
+        }`
       );
+
       if (res.data.success) {
         setIsApplied(true); // Update the local state
         const updatedJob = {
@@ -48,7 +51,10 @@ const JobDescription = () => {
     const fetchSingleJob = async () => {
       try {
         axios.defaults.withCredentials = true;
-        const res = await axios.get(`${API_BASE_URL}/api/v1/job/${params.id}`);
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/api/v1/job/${params.id}`
+        );
+
         if (res.data.success) {
           dispatch(setSingleJobById(res.data.job));
           setIsApplied(

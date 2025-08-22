@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchJobs } from "../redux/jobSlice"; // 👈 thunk import
+import { fetchJobs } from "../redux/jobSlice";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
-import { useNavigate } from "react-router-dom"; // ✅ navigate ke liye
-import { motion } from "framer-motion"; // ✅ animation ke liye
-
-import Navbar from "./shared/Navbar"; // ✅ Navbar component
-import FilterCard from "./FilterCard"; // ✅ Filter sidebar
-import Job from "./Job"; // ✅ Single job card
+import Navbar from "./shared/Navbar";
+import FilterCard from "./FilterCard";
+import Job from "./Job";
 import Jobnotfound from "./Jobnotfound";
+
 const Jobs = () => {
   const { authUser } = useSelector((store) => store.auth);
   const {
@@ -16,28 +16,33 @@ const Jobs = () => {
     searchText,
     status,
   } = useSelector((store) => store.job);
+
   const [filterJobs, setFilterJobs] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // ✅ jobs fetch on mount
+  // ✅ fetch jobs on mount
   useEffect(() => {
     dispatch(fetchJobs());
   }, [dispatch]);
 
-  // ✅ filter jobs
+  // ✅ filter jobs based on search
   useEffect(() => {
     if (Array.isArray(allJobs)) {
-      if (searchText) {
-        const filteredJobs = allJobs.filter((job) => {
-          return (
-            job?.title?.toLowerCase().includes(searchText.toLowerCase()) ||
-            job?.description
-              ?.toLowerCase()
-              .includes(searchText.toLowerCase()) ||
-            job?.location?.toLowerCase().includes(searchText.toLowerCase())
-          );
-        });
+      console.log("All jobs:", allJobs);
+
+      if (!searchText && searchText.trim() !== "") {
+        const keywords = searchText.toLowerCase().split(" ");
+        const filteredJobs = allJobs.filter((job) =>
+          keywords.some(
+            (kw) =>
+              job.title.toLowerCase().includes(kw) ||
+              job.description.toLowerCase().includes(kw) ||
+              job.location.toLowerCase().includes(kw) ||
+              job.company?.name?.toLowerCase().includes(kw) // ✅ company is populated object
+          )
+        );
+        console.log("Filtered jobs:", filteredJobs);
         setFilterJobs(filteredJobs);
       } else {
         setFilterJobs(allJobs);
@@ -45,7 +50,7 @@ const Jobs = () => {
     }
   }, [allJobs, searchText]);
 
-  // recruiter redirect
+  // ✅ recruiter redirect
   useEffect(() => {
     if (authUser?.role === "recruiter") {
       navigate("/admin/jobs");
@@ -60,6 +65,7 @@ const Jobs = () => {
           <div className="w-[20%]">
             <FilterCard />
           </div>
+
           {status === "loading" ? (
             <p>Loading jobs...</p>
           ) : filterJobs?.length > 0 ? (

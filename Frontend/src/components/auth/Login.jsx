@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../shared/Navbar";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { RadioGroup } from "../ui/radio-group";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { setAuthUser, setLoading } from "@/redux/authSlice";
 import { Loader2 } from "lucide-react";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Login = () => {
   const [input, setInput] = useState({
@@ -28,12 +30,13 @@ const Login = () => {
 
     try {
       dispatch(setLoading(true));
-      const res = await axios.post("${API_BASE_URL}/api/v1/user/login", input, {
+      const res = await axios.post(`${API_BASE_URL}/api/v1/user/login`, input, {
         headers: {
           "Content-Type": "application/json",
         },
         withCredentials: true,
       });
+      console.log("Login Response:", res.data); // 👈 ye daal
       if (res.data.success) {
         dispatch(setAuthUser(res.data.user));
         navigate("/");
@@ -118,7 +121,7 @@ const Login = () => {
             </Button>
           )}
           <span className="text-sm">
-            Don't have an account?{" "}
+            Do not have an account?{" "}
             <Link
               to={"/signup"}
               className="text-blue-500 cursor-pointer underline"

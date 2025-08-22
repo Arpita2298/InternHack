@@ -1,16 +1,19 @@
 import mongoose from "mongoose";
 
-const jobSchema = new mongoose.Schema(
-  {
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    company: { type: String, required: true },
-    location: { type: String, required: true },
-    salary: { type: Number, required: true },
-    experienceLevel: { type: String, required: true },
+const jobSchema = new mongoose.Schema({
+  title: String,
+  description: String,
+  salary: Number,
+  position: Number,
+  jobType: String,
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
-  { timestamps: true }
-);
-
+  company: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Company", // ✅ yeh important hai
+  },
+});
 const Job = mongoose.model("Job", jobSchema);
 export default Job;

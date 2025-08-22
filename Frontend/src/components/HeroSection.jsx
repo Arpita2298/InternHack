@@ -1,5 +1,4 @@
 import { setSearchFilters } from "../redux/jobSlice";
-
 import { Search } from "lucide-react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";

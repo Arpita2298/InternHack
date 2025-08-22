@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../shared/Navbar";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -11,15 +11,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "@/redux/authSlice";
 import { Loader2 } from "lucide-react";
 
-const Singup = () => {
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+const Signup = () => {
   const [input, setInput] = useState({
     fullname: "",
     email: "",
     phoneNumber: "",
     password: "",
     role: "",
-    file: "",
   });
+
   const { loading, authUser } = useSelector((store) => store.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -27,44 +29,36 @@ const Singup = () => {
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
-  const changeFileHandler = (e) => {
-    setInput({ ...input, file: e.target.files?.[0] });
-  };
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("fullname", input.fullname);
-    formData.append("email", input.email);
-    formData.append("phoneNumber", input.phoneNumber);
-    formData.append("password", input.password);
-    formData.append("role", input.role);
-    if (input.file) {
-      formData.append("file", input.file);
-    }
     try {
       dispatch(setLoading(true));
+      console.log("API_BASE_URL =", API_BASE_URL);
+
       const res = await axios.post(
-        "${API_BASE_URL}/api/v1/user/register",
-        formData,
+        `${API_BASE_URL}/api/v1/user/register`,
+        input, // ✅ sending plain JSON
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
           withCredentials: true,
         }
       );
+
       if (res.data.success) {
         navigate("/login");
         toast.success(res.data.message);
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
       dispatch(setLoading(false));
     }
   };
+
   useEffect(() => {
     if (authUser?.role === "recruiter") {
       navigate("/admin/companies");
@@ -72,6 +66,7 @@ const Singup = () => {
       navigate("/");
     }
   }, []);
+
   return (
     <>
       <Navbar />
@@ -132,7 +127,7 @@ const Singup = () => {
                   onChange={changeEventHandler}
                   className="cursor-pointer"
                 />
-                <Label htmlFor="r1">Students</Label>
+                <Label htmlFor="r1">Student</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Input
@@ -146,15 +141,6 @@ const Singup = () => {
                 <Label htmlFor="r2">Recruiter</Label>
               </div>
             </RadioGroup>
-            <div className="flex items-center gap-2">
-              <Label>Profile</Label>
-              <Input
-                accept="image/*"
-                type="file"
-                onChange={changeFileHandler}
-                className="cursor-pointer"
-              />
-            </div>
           </div>
           {loading ? (
             <Button className="w-full my-4">
@@ -181,4 +167,4 @@ const Singup = () => {
   );
 };
 
-export default Singup;
+export default Signup;
